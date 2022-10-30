@@ -1,3 +1,1 @@
-docker/db/master/.data
-docker/db/slaves/slave_1/.data
-docker/db/slaves/slave_2/.data
+/docker/db/master/.data/
