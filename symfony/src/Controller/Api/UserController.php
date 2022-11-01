@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Blog;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -51,6 +52,28 @@ class UserController extends AbstractController
             $em->persist($user);
             $em->flush();
             return $this->json([$message, $post, $user], 200, [], ['groups' => 'main']);
+
+        } catch (\Exception $e){
+            return $this->json($e->getMessage(), 401);
+
+        }
+    }
+    #[Route('/api/user/{user<\d+>}/subscribe/{blog<\d+>}', name: 'app_api_user_subscribe')]
+    public function toggleBlogSubscribed(EntityManagerInterface $em, User $user, Blog $blog): JsonResponse
+    {
+
+        try {
+            if($user->getBlogs()->contains($blog)){
+                $user->removeBlog($blog);
+                $message = "unsubscribed";
+            }else{
+                $user->addBlog($blog);
+                $message = "subscribed";
+
+            };
+            $em->persist($user);
+            $em->flush();
+            return $this->json([$message, $blog, $user], 200, [], ['groups' => 'main']);
 
         } catch (\Exception $e){
             return $this->json($e->getMessage(), 401);
