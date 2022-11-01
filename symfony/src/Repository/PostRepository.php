@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Post;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -38,7 +40,30 @@ class PostRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    public function findPostsQuery(User $user)
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+        return
+            $this->latest($queryBuilder)
+                ->innerJoin('p.blog', 'b' )
+                ->addSelect('b')
+                ->innerJoin('b.post', 'pb' )
+                ->innerJoin('b.subscribers', 's')
+                ->andWhere("s.id = {$user->getId()}")
+                ->addSelect('pb');
 
+    }
+
+    private function latest(QueryBuilder $queryBuilder = null): QueryBuilder
+    {
+        return $this->getOrCreateQueryBuilder($queryBuilder)->orderBy('p.createdAt', 'DESC');
+    }
+
+
+    private function getOrCreateQueryBuilder(QueryBuilder $queryBuilder = null): QueryBuilder
+    {
+        return $queryBuilder ?? $this->createQueryBuilder('p');
+    }
 //    /**
 //     * @return Post[] Returns an array of Post objects
 //     */

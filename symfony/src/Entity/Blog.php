@@ -27,9 +27,13 @@ class Blog
     #[ORM\OneToMany(mappedBy: 'blog', targetEntity: Post::class)]
     private Collection $post;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'blogs')]
+    private Collection $subscribers;
+
     public function __construct()
     {
         $this->post = new ArrayCollection();
+        $this->subscribers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -74,6 +78,33 @@ class Blog
             if ($post->getBlog() === $this) {
                 $post->setBlog(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getSubscribers(): Collection
+    {
+        return $this->subscribers;
+    }
+
+    public function addSubscriber(User $subscriber): self
+    {
+        if (!$this->subscribers->contains($subscriber)) {
+            $this->subscribers->add($subscriber);
+            $subscriber->addBlog($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscriber(User $subscriber): self
+    {
+        if ($this->subscribers->removeElement($subscriber)) {
+            $subscriber->removeBlog($this);
         }
 
         return $this;

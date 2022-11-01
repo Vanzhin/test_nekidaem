@@ -26,7 +26,7 @@ class Post
         maxMessage: 'Title name cannot be longer than {{ limit }} characters',
     )]
     private ?string $title = null;
-
+    #[Groups('main')]
     #[ORM\Column(length: 140, nullable: true)]
     #[Assert\Length(
         max: 140,

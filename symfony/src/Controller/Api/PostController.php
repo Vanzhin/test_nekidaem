@@ -4,13 +4,17 @@ namespace App\Controller\Api;
 
 use App\Entity\Blog;
 use App\Entity\Post;
+use App\Entity\User;
 use App\Repository\BlogRepository;
 use App\Repository\PostRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -40,7 +44,7 @@ class PostController extends AbstractController
             $errors = $validator->validate($post);
 
             if (count($errors) > 0) {
-                $errorsString = (string) $errors;
+                $errorsString = (string)$errors;
                 return $this->json(['status' => 'error', 'message' => $errorsString]);
             }
             $em->persist($post);
@@ -79,12 +83,25 @@ class PostController extends AbstractController
             $errors = $validator->validate($post);
 
             if (count($errors) > 0) {
-                $errorsString = (string) $errors;
+                $errorsString = (string)$errors;
                 return $this->json(['status' => 'error', 'message' => $errorsString]);
             }
         } catch (\Exception $e) {
             return $this->json($e->getMessage());
         }
         return $this->json($post, 200, [], ['groups' => ['main']]);
+    }
+
+    #[Route('/admin/posts/subscribed/{id<\d+>}', name: 'app_admin_post_subscribed')]
+    public function postsSubscribedByUser(PostRepository $postRepository, PaginatorInterface $paginator, Request $request, User $user): Response
+    {
+        $posts = $postRepository->findPostsQuery($user);
+        $pagination = $paginator->paginate(
+            $posts, /* query NOT result */
+            $request->query->getInt('page', 1)/*page number*/,
+            10/*limit per page*/
+        );
+        $json = $this->json($pagination, 200, [], ['groups' => 'main']);
+        return ($json);
     }
 }
