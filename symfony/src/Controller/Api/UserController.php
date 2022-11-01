@@ -35,7 +35,7 @@ class UserController extends AbstractController
         return $this->json('error: no user with id ' . $request->get('id'), 401);
     }
 
-    #[Route('/api/user/{user<\d+>}/subscribe/{post<\d+>}', name: 'app_api_user_subscribe')]
+    #[Route('/api/user/{user<\d+>}/read/{post<\d+>}', name: 'app_api_user_read')]
     public function toggleReadPost(EntityManagerInterface $em, User $user, Post $post): JsonResponse
     {
 
