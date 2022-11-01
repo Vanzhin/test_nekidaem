@@ -2,7 +2,10 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Post;
+use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +32,29 @@ class UserController extends AbstractController
         if ($user) {
             return $this->json($user, 200, [], ['groups' => 'main']);
         }
-        return $this->json('error: no user with id '. $request->get('id'), 401
-        );
+        return $this->json('error: no user with id ' . $request->get('id'), 401);
+    }
+
+    #[Route('/api/user/{user<\d+>}/subscribe/{post<\d+>}', name: 'app_api_user_subscribe')]
+    public function toggleReadPost(EntityManagerInterface $em, User $user, Post $post): JsonResponse
+    {
+
+        try {
+            if($user->getReadPosts()->contains($post)){
+                $user->removeReadPost($post);
+                $message = "unread";
+            }else{
+                $user->addReadPost($post);
+                $message = "read";
+
+            };
+            $em->persist($user);
+            $em->flush();
+            return $this->json([$message, $post, $user], 200, [], ['groups' => 'main']);
+
+        } catch (\Exception $e){
+            return $this->json($e->getMessage(), 401);
+
+        }
     }
 }

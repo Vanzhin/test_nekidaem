@@ -5,10 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Blog;
 use App\Entity\Post;
 use App\Entity\User;
-use App\Repository\BlogRepository;
 use App\Repository\PostRepository;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -92,7 +89,7 @@ class PostController extends AbstractController
         return $this->json($post, 200, [], ['groups' => ['main']]);
     }
 
-    #[Route('/admin/posts/subscribed/{id<\d+>}', name: 'app_admin_post_subscribed')]
+    #[Route('/api/posts/subscribed/{id<\d+>}', name: 'app_api_post_subscribed')]
     public function postsSubscribedByUser(PostRepository $postRepository, PaginatorInterface $paginator, Request $request, User $user): Response
     {
         $posts = $postRepository->findPostsQuery($user);

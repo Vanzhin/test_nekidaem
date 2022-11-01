@@ -48,9 +48,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Blog::class, inversedBy: 'subscribers')]
     private Collection $blogs;
 
+    #[ORM\ManyToMany(targetEntity: Post::class, inversedBy: 'usersRead')]
+    private Collection $readPosts;
+
     public function __construct()
     {
         $this->blogs = new ArrayCollection();
+        $this->readPosts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +171,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeBlog(Blog $blog): self
     {
         $this->blogs->removeElement($blog);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Post>
+     */
+    public function getReadPosts(): Collection
+    {
+        return $this->readPosts;
+    }
+
+    public function addReadPost(Post $readPost): self
+    {
+        if (!$this->readPosts->contains($readPost)) {
+            $this->readPosts->add($readPost);
+        }
+
+        return $this;
+    }
+
+    public function removeReadPost(Post $readPost): self
+    {
+        $this->readPosts->removeElement($readPost);
 
         return $this;
     }

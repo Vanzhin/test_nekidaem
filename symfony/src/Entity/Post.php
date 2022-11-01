@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -36,6 +38,14 @@ class Post
 
     #[ORM\ManyToOne(inversedBy: 'post')]
     private ?Blog $blog = null;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'readPosts')]
+    private Collection $usersRead;
+
+    public function __construct()
+    {
+        $this->usersRead = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +84,33 @@ class Post
     public function setBlog(?Blog $blog): self
     {
         $this->blog = $blog;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsersRead(): Collection
+    {
+        return $this->usersRead;
+    }
+
+    public function addUsersRead(User $usersRead): self
+    {
+        if (!$this->usersRead->contains($usersRead)) {
+            $this->usersRead->add($usersRead);
+            $usersRead->addReadPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsersRead(User $usersRead): self
+    {
+        if ($this->usersRead->removeElement($usersRead)) {
+            $usersRead->removeReadPost($this);
+        }
 
         return $this;
     }
