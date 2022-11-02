@@ -39,7 +39,6 @@ class UserController extends AbstractController
     #[Route('/api/user/{user<\d+>}/read/{post<\d+>}', name: 'app_api_user_read')]
     public function toggleReadPost(EntityManagerInterface $em, User $user, Post $post): JsonResponse
     {
-
         try {
             if($user->getReadPosts()->contains($post)){
                 $user->removeReadPost($post);
@@ -61,7 +60,6 @@ class UserController extends AbstractController
     #[Route('/api/user/{user<\d+>}/subscribe/{blog<\d+>}', name: 'app_api_user_subscribe')]
     public function toggleBlogSubscribed(EntityManagerInterface $em, User $user, Blog $blog): JsonResponse
     {
-
         try {
             if($user->getBlogs()->contains($blog)){
                 $user->removeBlog($blog);

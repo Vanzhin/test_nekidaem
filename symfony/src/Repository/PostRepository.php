@@ -40,19 +40,21 @@ class PostRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
     public function findPostsQuery(User $user)
     {
         $queryBuilder = $this->createQueryBuilder('p');
         return
             $this->latest($queryBuilder)
-                ->innerJoin('p.blog', 'b' )
+                ->innerJoin('p.blog', 'b')
                 ->addSelect('b')
-                ->innerJoin('b.post', 'pb' )
+                ->innerJoin('b.post', 'pb')
                 ->innerJoin('b.subscribers', 's')
                 ->andWhere("s.id = {$user->getId()}")
                 ->addSelect('pb');
 
     }
+
 
     private function latest(QueryBuilder $queryBuilder = null): QueryBuilder
     {

@@ -89,7 +89,7 @@ class PostController extends AbstractController
         return $this->json($post, 200, [], ['groups' => ['main']]);
     }
 
-    #[Route('/api/posts/subscribed/{id<\d+>}', name: 'app_api_post_subscribed')]
+    #[Route('/api/posts/subscribed/{user<\d+>}', name: 'app_api_post_subscribed')]
     public function postsSubscribedByUser(PostRepository $postRepository, PaginatorInterface $paginator, Request $request, User $user): Response
     {
         $posts = $postRepository->findPostsQuery($user);
@@ -101,4 +101,5 @@ class PostController extends AbstractController
         $json = $this->json($pagination, 200, [], ['groups' => 'main']);
         return ($json);
     }
+
 }
