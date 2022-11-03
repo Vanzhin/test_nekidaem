@@ -10,16 +10,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends AbstractController
 {
 
     #[Route('/admin/user/create', name: 'app_admin_user_create')]
-    public function create(Request $request, EntityManagerInterface $em, EventDispatcherInterface $dispatcher)
+    public function create(Request $request, EntityManagerInterface $em, EventDispatcherInterface $dispatcher): Response
     {
         $form = $this->createForm(UserFormType::class);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             /**
              * @var User $user
              */
@@ -30,9 +31,9 @@ class UserController extends AbstractController
             $this->addFlash('user_message', 'user created');
         }
 
-            return $this->render('admin/user/create.html.twig', [
-                'userForm' => $form->createView()
+        return $this->render('admin/user/create.html.twig', [
+            'userForm' => $form->createView()
 
-            ]);
+        ]);
     }
 }

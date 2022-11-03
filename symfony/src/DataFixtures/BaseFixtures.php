@@ -66,7 +66,6 @@ abstract class BaseFixtures extends Fixture
             unset($this->referencesIndex[$className][$key]);
         }
 
-
         return $this->getReference($item);
     }
 
