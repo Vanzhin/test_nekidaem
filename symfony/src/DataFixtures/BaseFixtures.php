@@ -38,13 +38,16 @@ abstract class BaseFixtures extends Fixture
         for ($i = 0; $i < $count; $i++) {
             $entity = $this->create($className, $factory);
             $this->addReference("$className|$i", $entity);
+
         }
         $this->manager->flush();
+
     }
 
-    protected function getRandomReferences($className)
+    protected function getRandomReferences($className, bool $isOneToOne = false)
     {
         if (!isset($this->referencesIndex[$className])) {
+
             $this->referencesIndex[$className] = [];
 
             foreach ($this->referenceRepository->getReferences() as $key => $reference) {
@@ -56,7 +59,16 @@ abstract class BaseFixtures extends Fixture
         if (empty($this->referencesIndex[$className])) {
             throw new \Exception('не найдены ссылки на класс' . $className);
         }
-        return $this->getReference($this->faker->randomElement($this->referencesIndex[$className]));
+        $item = $this->faker->randomElement($this->referencesIndex[$className]);
+
+        if ($isOneToOne) {
+            $key = array_search($item, $this->referencesIndex[$className], $strict = false);
+            unset($this->referencesIndex[$className][$key]);
+        }
+
+
+        return $this->getReference($item);
     }
+
 
 }
